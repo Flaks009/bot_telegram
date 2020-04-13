@@ -11,7 +11,7 @@ def handle(msg):
       bot.sendMessage (chat_id, str("Test message."))
  
 # Permite que os comandos digitados no telegram sejam enviados a Raspberry PI
-bot = telepot.Bot('961146795:AAGH2RzfahI1qtqJqtSYyUf6Y0gQQ8jenl4')
+bot = telepot.Bot('bot id')
 bot.getMe()
 bot.message_loop(handle)
 print('Hold on...')
