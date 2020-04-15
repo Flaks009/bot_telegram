@@ -14,4 +14,3 @@ def test_dol():
         except:
             pass
     return a
-print(test_dol())

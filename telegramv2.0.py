@@ -1,23 +1,46 @@
 import time
-import sys
+import config
+from api_request import test_dol
 import telepot
 from telepot.loop import MessageLoop
-from api_request import test_dol
+from telepot.namedtuple import InlineQueryResultArticle, InputTextMessageContent
 
-# Permite que os comandos digitados no telegram sejam enviados a Raspberry PI
-#bot = telepot.Bot('961146795:AAGH2RzfahI1qtqJqtSYyUf6Y0gQQ8jenl4')
-#bot.getMe()
 
 def handle(msg):
    content_type, chat_type, chat_id = telepot.glance(msg)
    print(content_type, chat_type, chat_type)
 
    if content_type == 'text':
-      bot.sendMessage(chat_id, test_dol()) 
+      bot.sendMessage(chat_id, test_dol())
 
-TOKEN = sys.argv[1]
+def on_inline_query(msg):
+   def compute():
+      query_id, from_id, query_string = telepot.glance(msg, flavor='inline_query')
+      print ('Inline Query:', query_id, from_id, query_string)
+
+      articles = [InlineQueryResultArticle(
+                     id='Test',
+                     title='Inline Test',
+                     input_message_content=InputTextMessageContent(
+                           message_text='Inline Test'
+                     )
+                  )]
+
+      return articles
+   answerer.answer(msg, compute)
+
+def on_chosen_inline_result(msg):
+    result_id, from_id, query_string = telepot.glance(msg, flavor='chosen_inline_result')
+    print ('Chosen Inline Result:', result_id, from_id, query_string)
+
+TOKEN = config.TOKEN
 bot = telepot.Bot(TOKEN)
-MessageLoop(bot, handle).run_as_thread()
+answerer = telepot.helper.Answerer(bot)
+
+MessageLoop(bot, {'chat':handle,
+                  'inline_query':on_inline_query,
+                  'chosen_inline_result':on_chosen_inline_result
+}).run_as_thread()
 print('Listening...')
 
 while True:
